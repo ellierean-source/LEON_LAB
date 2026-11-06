@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="LEON_LAB — мобильная творческая лаборатория">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <title>LEON_LAB</title>
+  <style>
+    :root { color-scheme: dark; --ink:#e7edf8; --muted:#9aaac4; --line:#334155; --panel:rgba(30,41,59,.82); --blue:#8eb8ff; --lav:#c9b8ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:radial-gradient(ellipse at 12% 0%, #263550 0, transparent 43%), linear-gradient(145deg,#0b1220,#111827 56%,#101b2c); }
+    button,input { font:inherit; }
+    button { border:0; cursor:pointer; color:var(--ink); }
+    .app { max-width:850px; margin:auto; padding: max(18px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom)); }
+    header { display:flex; align-items:center; gap:12px; margin:8px 2px 22px; }
+    .logo { width:54px;height:54px;border-radius:18px;background:linear-gradient(140deg,#26364f,#172337);box-shadow:0 8px 22px #02061780,inset 0 0 0 1px #42516a;display:grid;place-items:center;font-size:28px; }
+    h1 { font-size:22px; letter-spacing:.12em; margin:0; font-weight:800; }
+    .sub { color:var(--muted); font-size:12px; margin-top:4px; letter-spacing:.08em; }
+    .pill { margin-left:auto; border:1px solid #334155; background:#1e293bcf; padding:8px 11px; border-radius:999px; font-size:12px; color:#647590; }
+    .hero { padding:23px 20px; border-radius:27px; background:linear-gradient(135deg,#1e293be8,#172338e0); border:1px solid #334155; box-shadow:0 14px 36px #02061760; }
+    .eyebrow { text-transform:uppercase; letter-spacing:.14em; font-size:10px; font-weight:800; color:#91a8cc; }
+    .hero h2 { margin:8px 0 7px; font-size:25px; line-height:1.15; }
+    .hero p { color:#a7b6ce; font-size:14px; line-height:1.55; margin:0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:14px; }
+    .tile { min-height:128px; text-align:left; border-radius:22px; padding:16px; background:var(--panel); border:1px solid #334155; box-shadow:0 8px 24px #02061740; transition:transform .15s; }
+    .tile:active { transform:scale(.98); }
+    .tile .emoji { font-size:25px; display:block; margin-bottom:12px; }
+    .tile strong { display:block; font-size:15px; margin-bottom:5px; }
+    .tile small { color:var(--muted); line-height:1.4; font-size:12px; }
+    .section { margin-top:20px; padding:18px; border-radius:24px; background:#1e293bcf; border:1px solid #334155; box-shadow:0 8px 24px #02061740; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    h3 { margin:0; font-size:17px; }
+    .hint { font-size:12px; color:var(--muted); margin:7px 0 14px; line-height:1.5; }
+    #stage { width:100%; height:300px; display:block; border-radius:18px; background:radial-gradient(ellipse at 50% 30%,#ffffff,#e8f1ff 60%,#e4eaff); touch-action:pan-y; }
+    .controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .btn { border-radius:13px; padding:11px 13px; background:#26364f; border:1px solid #3b4d68; font-size:13px; font-weight:700; }
+    .btn.primary { color:white; background:linear-gradient(135deg,#779fe8,#9c91e8); border:0; box-shadow:0 6px 14px #8e9ce633; }
+    .btn.soft { background:#172337; border:1px solid var(--line); }
+    .control-row { display:flex; align-items:center; gap:12px; margin:12px 0; font-size:13px; color:#60708b; }
+    .control-row label { min-width:72px; }
+    input[type=range] { flex:1; accent-color:#8c9fe8; min-width:0; }
+    .value { min-width:32px; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
+    .status { padding:12px 14px; border-radius:14px; background:#1b2a40; color:#a7b6ce; font-size:12px; line-height:1.5; margin-top:12px; }
+    .filelist { display:flex; flex-direction:column; gap:8px; }
+    .file { display:flex; align-items:center; gap:10px; border-radius:14px; background:#172337; padding:12px; font-size:13px; }
+    .file span { flex:1; }
+    footer { color:#71819a; font-size:11px; text-align:center; padding:24px 0 8px; }
+    input[type=file] { color:var(--ink); background:#172337 !important; border-color:var(--line) !important; }
+    textarea { color:var(--ink) !important; background:#172337 !important; border-color:var(--line) !important; }
+    #colorCanvas { background:#fff !important; }
+    .file strong { color:#cbd8ee; }
+    @media(min-width:650px) { .grid { grid-template-columns:repeat(4,minmax(0,1fr)); } #stage { height:360px; } .hero { padding:28px; } }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo" aria-hidden="true">⚗️</div>
+    <div><h1>LEON_LAB</h1><div class="sub">CREATIVE TOOLKIT · v0.3.1</div></div>
+    <div class="pill">mobile preview</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Личная лаборатория</div>
+    <h2>Идеи становятся<br>инструментами.</h2>
+    <p>Творческая мастерская для 3D, экспериментов и маленьких открытий. Первая версия работает прямо в браузере телефона.</p>
+  </section>
+
+  <nav class="grid" aria-label="Разделы">
+    <button class="tile" onclick="showSection('3d')"><span class="emoji">🧊</span><strong>3D-цех</strong><small>Создание и вращение фигур</small></button>
+    <button class="tile" onclick="showSection('color')"><span class="emoji">🎨</span><strong>Цветовой цех</strong><small>Лайнарт и отдельные цветовые области</small></button>
+    <button class="tile" onclick="showSection('archive')"><span class="emoji">📦</span><strong>Архив</strong><small>Сохранённые модели</small></button>
+    <button class="tile" onclick="showSection('ideas')"><span class="emoji">✨</span><strong>Идеи</strong><small>Заметки для экспериментов</small></button>
+    <button class="tile" onclick="showSection('about')"><span class="emoji">🛠️</span><strong>О лаборатории</strong><small>Версия и обновления</small></button>
+  </nav>
+
+  <section id="3d" class="section">
+    <div class="section-head"><h3>🧊 3D-цех</h3><span class="eyebrow">WEBGL</span></div>
+    <p class="hint">Потяни по сцене, чтобы вращать куб. Это первая рабочая заготовка; всё вычисляется на устройстве.</p>
+    <canvas id="stage" aria-label="Интерактивная 3D-сцена"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="setShape('cube')">Куб</button>
+      <button class="btn" onclick="setShape('pyramid')">Пирамида</button>
+      <button class="btn" onclick="setShape('octa')">Октаэдр</button>
+      <button class="btn soft" onclick="resetScene()">Сбросить вид</button>
+    </div>
+    <div class="control-row"><label for="size">Размер</label><input id="size" type="range" min="0.5" max="2" step="0.1" value="1"><span class="value" id="sizeValue">1.0×</span></div>
+    <div class="control-row"><label for="spin">Вращение</label><input id="spin" type="range" min="0" max="2" step="0.1" value="0.5"><span class="value" id="spinValue">0.5</span></div>
+    <div class="controls">
+      <button class="btn primary" onclick="saveOBJ()">Экспорт OBJ</button>
+      <button class="btn soft" onclick="saveProject()">Сохранить проект</button>
+    </div>
+    <div class="status" id="sceneStatus">Сцена готова. Выбери фигуру или вращай её пальцем.</div>
+  </section>
+
+
+  <section id="color" class="section" hidden>
+    <div class="section-head"><h3>🎨 Цветовой цех</h3><span class="eyebrow">COLOR ENGINE · EXPERIMENTAL</span></div>
+    <p class="hint">Загрузи рисунок. Лаборатория выделит контур и попробует найти замкнутые области, чтобы их можно было раскрашивать независимо. Обработка выполняется локально на устройстве.</p>
+    <input id="colorFile" type="file" accept="image/*" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff">
+    <div class="controls">
+      <button class="btn primary" onclick="extractColorRegions()">Найти области</button>
+      <button class="btn soft" onclick="extractLineart()">Выделить лайнарт</button>
+      <button class="btn soft" onclick="resetColoring()">Сбросить</button>
+    </div>
+    <div class="control-row"><label for="lineThreshold">Порог контура</label><input id="lineThreshold" type="range" min="40" max="220" step="5" value="150"><span class="value" id="lineThresholdValue">150</span></div>
+    <div class="control-row"><label for="paintColor">Цвет заливки</label><input id="paintColor" type="color" value="#ff83bd" style="width:64px;flex:0 0 64px;height:38px;padding:3px"><span class="hint" style="margin:0">Нажми на область рисунка, чтобы залить её</span></div>
+    <canvas id="colorCanvas" style="width:100%;display:block;max-height:65vh;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:16px;touch-action:manipulation"></canvas>
+    <div class="controls">
+      <button class="btn primary" onclick="exportLineart()">Сохранить лайнарт PNG</button>
+      <button class="btn soft" onclick="exportColored()">Сохранить раскраску PNG</button>
+      <button class="btn soft" onclick="exportRegions()">Экспортировать слои областей</button>
+    </div>
+    <div class="status" id="colorStatus">Сначала выбери изображение. Совет: лучше всего работают рисунки с чёткими тёмными линиями и замкнутыми контурами.</div>
+  </section>
+
+  <section id="archive" class="section" hidden>
+    <div class="section-head"><h3>📦 Архив</h3><button class="btn soft" onclick="renderArchive()">Обновить</button></div>
+    <p class="hint">Сохранённые проекты хранятся локально в браузере этого устройства.</p>
+    <div class="filelist" id="archiveList"></div>
+  </section>
+
+  <section id="ideas" class="section" hidden>
+    <h3>✨ Блокнот идей</h3>
+    <p class="hint">Заметки сохраняются на устройстве в этом браузере.</p>
+    <textarea id="ideaText" rows="5" placeholder="Например: сделать генератор кристаллов…" style="width:100%;padding:13px;border-radius:14px;border:1px solid var(--line);background:#fbfcff;color:var(--ink);resize:vertical"></textarea>
+    <div class="controls"><button class="btn primary" onclick="saveIdea()">Сохранить заметку</button><button class="btn soft" onclick="loadIdea()">Загрузить</button></div>
+    <div class="status" id="ideaStatus">Пока пусто.</div>
+  </section>
+
+  <section id="about" class="section" hidden>
+    <h3>🛠️ О лаборатории</h3>
+    <p class="hint">LEON_LAB — экспериментальная мобильная версия. Версия 0.3.1.</p>
+    <div class="file"><span>3D-сцена</span><strong>локально</strong></div>
+    <div class="file"><span>Сохранение проектов</span><strong>локально</strong></div>
+    <div class="file"><span>Проверка обновлений</span><button class="btn primary" onclick="checkForUpdates()">Проверить обновления</button></div>
+    <div class="status">Новые версии можно проверить здесь. При наличии обновления Android предложит скачать APK и подтвердить установку. Сохраняй важные проекты экспортом.</div>
+  </section>
+
+  <footer>LEON_LAB · Made for curious minds · v0.3.1</footer>
+</div>
+<script>
+const sections = ['3d','color','archive','ideas','about'];
+function checkForUpdates(){ if(window.AndroidBridge && AndroidBridge.checkForUpdates){ AndroidBridge.checkForUpdates(); } else { alert('Проверка обновлений доступна в установленной Android-версии LEON_LAB.'); } }
+function showSection(id) {
+  sections.forEach(s => document.getElementById(s).hidden = s !== id);
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  if(id==='archive') renderArchive();
+}
+const canvas = document.getElementById('stage');
+const gl = canvas.getContext('webgl', {antialias:true, alpha:true});
+const statusEl = document.getElementById('sceneStatus');
+let shape='cube', angleX=-0.45, angleY=0.65, size=1, spin=0.5, dragging=false, lastX=0,lastY=0, lastTime=0;
+const vertexShader = `
+attribute vec3 aPos;
+uniform mat4 uMVP;
+varying vec3 vPos;
+void main(){ vPos=aPos; gl_Position=uMVP*vec4(aPos,1.0); }
+`;
+const fragmentShader = `
+precision mediump float;
+varying vec3 vPos;
+void main(){
+  vec3 base=mix(vec3(0.46,0.66,0.98),vec3(0.79,0.72,1.0),clamp(vPos.y+0.5,0.0,1.0));
+  float light=0.72+0.28*max(dot(normalize(vec3(0.3,0.7,1.0)),normalize(vPos+vec3(0.001))),0.0);
+  gl_FragColor=vec4(base*light,1.0);
+}`;
+function shader(type, src){ const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(s);return s; }
+let program=null, buffer=null, mvpLoc=null, posLoc=null;
+function initGL(){
+  if(!gl){statusEl.textContent='WebGL недоступен в этом браузере. Попробуй открыть приложение в Chrome.';return;}
+  program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertexShader));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragmentShader));gl.linkProgram(program);
+  if(!gl.getProgramParameter(program,gl.LINK_STATUS)){statusEl.textContent='Не удалось запустить 3D-движок.';return;}
+  posLoc=gl.getAttribLocation(program,'aPos');mvpLoc=gl.getUniformLocation(program,'uMVP');buffer=gl.createBuffer();
+  gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.clearColor(0,0,0,0);resize();requestAnimationFrame(draw);
+}
+function resize(){if(!gl)return;const dpr=Math.min(window.devicePixelRatio||1,2);const w=Math.floor(canvas.clientWidth*dpr),h=Math.floor(canvas.clientHeight*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}}
+function matMul(a,b){let o=new Array(16).fill(0);for(let r=0;r<4;r++)for(let c=0;c<4;c++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o;}
+function perspective(fovy,aspect,near,far){let f=1/Math.tan(fovy/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
+function rotX(a){let c=Math.cos(a),s=Math.sin(a);return [1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1];}
+function rotY(a){let c=Math.cos(a),s=Math.sin(a);return [c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];}
+function scaleMat(s){return [s,0,0,0,0,s,0,0,0,0,s,0,0,0,0,1];}
+function translateZ(z){return [1,0,0,0,0,1,0,0,0,0,1,0,0,0,z,1];}
+function getVertices(){
+ const v={
+ cube:[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],
+ pyramid:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1],[0,1,0]],
+ octa:[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]
+ };
+ const f={
+ cube:[[0,1,2,0,2,3],[4,6,5,4,7,6],[0,4,5,0,5,1],[3,2,6,3,6,7],[1,5,6,1,6,2],[0,3,7,0,7,4]],
+ pyramid:[[0,2,1,0,3,2],[0,1,4],[1,2,4],[2,3,4],[3,0,4]],
+ octa:[[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]]
+ };
+ return f[shape].flatMap(face=>face.map(i=>v[shape][i])).flat();
+}
+function draw(now){
+ if(!gl||!program)return;resize();gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ if(!dragging && spin>0 && lastTime) angleY+=(now-lastTime)*0.00035*spin;
+ lastTime=now;
+ const aspect=canvas.width/Math.max(1,canvas.height);
+ let m=matMul(translateZ(-4.2),matMul(rotY(angleY),matMul(rotX(angleX),scaleMat(size))));
+ let mvp=matMul(perspective(0.8,aspect,0.1,100),m);
+ gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(getVertices()),gl.STATIC_DRAW);
+ gl.enableVertexAttribArray(posLoc);gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,0,0);gl.uniformMatrix4fv(mvpLoc,false,new Float32Array(mvp));gl.drawArrays(gl.TRIANGLES,0,getVertices().length/3);
+ requestAnimationFrame(draw);
+}
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;angleY+=(e.clientX-lastX)*0.012;angleX+=(e.clientY-lastY)*0.012;lastX=e.clientX;lastY=e.clientY;});
+canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);
+function setShape(s){shape=s;statusEl.textContent='Выбрана фигура: '+({cube:'куб',pyramid:'пирамида',octa:'октаэдр'}[s])+'.';}
+function resetScene(){angleX=-0.45;angleY=0.65;size=1;document.getElementById('size').value=1;document.getElementById('sizeValue').textContent='1.0×';statusEl.textContent='Вид сброшен.';}
+document.getElementById('size').addEventListener('input',e=>{size=+e.target.value;document.getElementById('sizeValue').textContent=size.toFixed(1)+'×';});
+document.getElementById('spin').addEventListener('input',e=>{spin=+e.target.value;document.getElementById('spinValue').textContent=spin.toFixed(1);});
+function modelData(){
+ const vertices=getVertices();let lines=['# LEON_LAB export','o '+shape];
+ for(let i=0;i<vertices.length;i+=3)lines.push(`v ${(vertices[i]*size).toFixed(5)} ${(vertices[i+1]*size).toFixed(5)} ${(vertices[i+2]*size).toFixed(5)}`);
+ for(let i=0;i<vertices.length/3;i+=3)lines.push(`f ${i+1} ${i+2} ${i+3}`);
+ return lines.join('\n')+'\n';
+}
+function downloadText(name,text,mime){if(window.AndroidBridge&&window.AndroidBridge.saveTextFile){window.AndroidBridge.saveTextFile(name,text,mime);return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+function saveOBJ(){downloadText('leon_lab_'+shape+'.obj',modelData(),'text/plain');statusEl.textContent='OBJ подготовлен к сохранению. Проверь папку «Загрузки».';}
+function getProjects(){try{return JSON.parse(localStorage.getItem('leonlab_projects')||'[]')}catch{return []}}
+function saveProject(){
+ const projects=getProjects();const item={id:Date.now(),name:shape.toUpperCase()+' · '+new Date().toLocaleString('ru-RU'),shape,size,angleX,angleY,spin,obj:modelData()};
+ projects.unshift(item);localStorage.setItem('leonlab_projects',JSON.stringify(projects.slice(0,30)));
+ statusEl.textContent='Проект сохранён в локальный архив браузера.';renderArchive();
+}
+function renderArchive(){
+ const list=document.getElementById('archiveList'), projects=getProjects();list.innerHTML='';
+ if(!projects.length){list.innerHTML='<div class="status">Пока нет сохранённых проектов. Создай фигуру и нажми «Сохранить проект».</div>';return;}
+ projects.forEach(p=>{const row=document.createElement('div');row.className='file';const span=document.createElement('span');span.textContent=p.name;const btn=document.createElement('button');btn.className='btn';btn.textContent='OBJ';btn.onclick=()=>downloadText('leon_lab_'+p.shape+'.obj',p.obj,'text/plain');row.append(span,btn);list.append(row);});
+}
+function saveIdea(){localStorage.setItem('leonlab_idea',document.getElementById('ideaText').value);document.getElementById('ideaStatus').textContent='Заметка сохранена на этом устройстве.';}
+function loadIdea(){document.getElementById('ideaText').value=localStorage.getItem('leonlab_idea')||'';document.getElementById('ideaStatus').textContent=document.getElementById('ideaText').value?'Заметка загружена.':'Пока нет сохранённой заметки.';}
+
+// --- LEON_LAB Color Layer Engine (experimental, local-only) ---
+const colorCanvas=document.getElementById('colorCanvas');
+const colorCtx=colorCanvas.getContext('2d',{willReadFrequently:true});
+let colorOriginal=null, colorBase=null, colorPixels=null, colorLabels=null, colorPaints={}, colorRegionCount=0;
+document.getElementById('lineThreshold').addEventListener('input',e=>document.getElementById('lineThresholdValue').textContent=e.target.value);
+document.getElementById('colorFile').addEventListener('change',e=>{
+ const f=e.target.files&&e.target.files[0]; if(!f)return;
+ const img=new Image(); img.onload=()=>{const max=1400,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));colorCanvas.width=Math.max(1,Math.round(img.naturalWidth*scale));colorCanvas.height=Math.max(1,Math.round(img.naturalHeight*scale));colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);colorCtx.drawImage(img,0,0,colorCanvas.width,colorCanvas.height);colorOriginal=colorCtx.getImageData(0,0,colorCanvas.width,colorCanvas.height);colorBase=new ImageData(new Uint8ClampedArray(colorOriginal.data),colorOriginal.width,colorOriginal.height);colorLabels=null;colorPaints={};setColorStatus('Изображение загружено. Нажми «Найти области» или «Выделить лайнарт».');URL.revokeObjectURL(img.src);};img.onerror=()=>setColorStatus('Не удалось открыть изображение. Попробуй PNG или JPG.');img.src=URL.createObjectURL(f);
+});
+function setColorStatus(s){document.getElementById('colorStatus').textContent=s;}
+function restoreColorBase(){if(!colorBase)return;colorCtx.putImageData(new ImageData(new Uint8ClampedArray(colorBase.data),colorBase.width,colorBase.height),0,0);}
+function grayAt(d,i){return (d[i]*.299+d[i+1]*.587+d[i+2]*.114);}
+function extractLineart(){
+ if(!colorBase){setColorStatus('Сначала загрузи изображение.');return;}
+ const d=new Uint8ClampedArray(colorBase.data),t=+document.getElementById('lineThreshold').value;
+ for(let i=0;i<d.length;i+=4){let g=grayAt(d,i);let a=Math.max(0,Math.min(255,Math.round((255-g)*1.8)));if(g>t)a=0;d[i]=d[i+1]=d[i+2]=0;d[i+3]=a;}
+ colorCtx.putImageData(new ImageData(d,colorBase.width,colorBase.height),0,0);setColorStatus('Лайнарт выделен на прозрачном фоне. Если линии исчезли или фон остался, измени порог и повтори.');
+}
+function extractColorRegions(){
+ if(!colorBase){setColorStatus('Сначала загрузи изображение.');return;}
+ const w=colorBase.width,h=colorBase.height,d=colorBase.data,n=w*h,t=+document.getElementById('lineThreshold').value;
+ const barrier=new Uint8Array(n),labels=new Int32Array(n),queue=new Int32Array(n);let label=0,areas=[];
+ for(let p=0;p<n;p++){let i=p*4;barrier[p]=grayAt(d,i)<t?1:0;}
+ for(let start=0;start<n;start++){
+  if(barrier[start]||labels[start])continue;
+  label++;let head=0,tail=0;queue[tail++]=start;labels[start]=label;let count=0;
+  while(head<tail){let p=queue[head++];count++;let x=p%w,y=(p/w)|0;
+   if(x>0){let q=p-1;if(!barrier[q]&&!labels[q]){labels[q]=label;queue[tail++]=q;}}
+   if(x<w-1){let q=p+1;if(!barrier[q]&&!labels[q]){labels[q]=label;queue[tail++]=q;}}
+   if(y>0){let q=p-w;if(!barrier[q]&&!labels[q]){labels[q]=label;queue[tail++]=q;}}
+   if(y<h-1){let q=p+w;if(!barrier[q]&&!labels[q]){labels[q]=label;queue[tail++]=q;}}
+  }
+  areas.push({id:label,count});
+  if(count>n*.45){for(let j=0;j<tail;j++)labels[queue[j]]=0;}
+ }
+ colorLabels=labels;colorRegionCount=label;colorPaints={};
+ // Repaint only original pixels; region colors are overlaid when clicked.
+ colorCtx.putImageData(new ImageData(new Uint8ClampedArray(colorBase.data),w,h),0,0);
+ const usable=areas.filter(a=>a.count>=3 && a.count<n*.45).length;
+ setColorStatus('Найдено областей: '+label+'. Достаточно крупные области: '+usable+'. Нажимай внутри области для заливки. Алгоритм экспериментальный: разрывы в контуре могут объединять соседние области.');
+}
+function renderColorPreview(){
+ if(!colorBase)return;const w=colorBase.width,h=colorBase.height,out=new Uint8ClampedArray(colorBase.data);
+ if(colorLabels){for(let p=0;p<colorLabels.length;p++){const c=colorPaints[colorLabels[p]];if(!c)continue;const i=p*4;out[i]=c[0];out[i+1]=c[1];out[i+2]=c[2];out[i+3]=Math.max(out[i+3],220);}}
+ colorCtx.putImageData(new ImageData(out,w,h),0,0);
+}
+function parseHex(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
+colorCanvas.addEventListener('pointerdown',e=>{
+ if(!colorLabels||!colorBase)return;const r=colorCanvas.getBoundingClientRect(),x=Math.max(0,Math.min(colorCanvas.width-1,Math.floor((e.clientX-r.left)/r.width*colorCanvas.width))),y=Math.max(0,Math.min(colorCanvas.height-1,Math.floor((e.clientY-r.top)/r.height*colorCanvas.height))),id=colorLabels[y*colorCanvas.width+x];
+ if(!id){setColorStatus('Здесь контур или нераспознанная точка. Попробуй нажать ближе к центру области.');return;}
+ colorPaints[id]=parseHex(document.getElementById('paintColor').value);renderColorPreview();setColorStatus('Залита область №'+id+'. Можно выбрать другой цвет и заливать следующие области.');
+});
+function resetColoring(){if(!colorBase){setColorStatus('Сначала загрузи изображение.');return;}colorPaints={};colorLabels=null;colorRegionCount=0;restoreColorBase();setColorStatus('Раскраска сброшена.');}
+function saveCanvasPng(name,canvas){
+ const url=canvas.toDataURL('image/png');
+ if(window.AndroidBridge&&window.AndroidBridge.saveBase64File){window.AndroidBridge.saveBase64File(name,url.substring(url.indexOf(',')+1),'image/png');}
+ else {const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+}
+function exportLineart(){if(!colorBase){setColorStatus('Сначала загрузи изображение.');return;}const d=new Uint8ClampedArray(colorBase.data),t=+document.getElementById('lineThreshold').value;for(let i=0;i<d.length;i+=4){let g=grayAt(d,i),a=g>t?0:Math.max(0,Math.min(255,Math.round((255-g)*1.8)));d[i]=d[i+1]=d[i+2]=0;d[i+3]=a;}const c=document.createElement('canvas');c.width=colorBase.width;c.height=colorBase.height;c.getContext('2d').putImageData(new ImageData(d,c.width,c.height),0,0);saveCanvasPng('leon_lab_lineart.png',c);}
+function exportColored(){if(!colorBase){setColorStatus('Сначала загрузи изображение.');return;}renderColorPreview();saveCanvasPng('leon_lab_coloring.png',colorCanvas);}
+function exportRegions(){
+ if(!colorLabels){setColorStatus('Сначала нажми «Найти области».');return;}
+ let exported=0;
+ for(let id=1;id<=colorRegionCount;id++){const c=document.createElement('canvas');c.width=colorBase.width;c.height=colorBase.height;const ctx=c.getContext('2d'),im=ctx.createImageData(c.width,c.height);let found=false;
+  for(let p=0;p<colorLabels.length;p++)if(colorLabels[p]===id){let i=p*4;im.data[i]=im.data[i+1]=im.data[i+2]=255;im.data[i+3]=255;found=true;}
+  if(found){ctx.putImageData(im,0,0);saveCanvasPng('leon_lab_region_'+String(id).padStart(3,'0')+'.png',c);exported++;}
+ }
+ setColorStatus('Подготовлено слоёв областей: '+exported+'. На некоторых устройствах браузер может попросить подтвердить несколько загрузок.');
+}
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+initGL();
+</script>
+</body>
+</html>
