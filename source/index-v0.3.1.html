@@ -120,7 +120,7 @@
   <section id="archive" class="section" hidden>
     <div class="section-head"><h3>📦 Архив</h3><button class="btn soft" onclick="renderArchive()">Обновить</button></div>
     <p class="hint">Сохранённые проекты хранятся локально в браузере этого устройства.</p>
-    <div class="filelist" id="archiveList"></div>
+    <div class="controls"><button class="btn primary" onclick="exportBackup()">Экспорт резервной копии</button><button class="btn soft" onclick="document.getElementById('backupFile').click()">Импорт копии</button><input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(event)"></div><div class="filelist" id="archiveList"></div>
   </section>
 
   <section id="ideas" class="section" hidden>
@@ -234,6 +234,8 @@ function renderArchive(){
  if(!projects.length){list.innerHTML='<div class="status">Пока нет сохранённых проектов. Создай фигуру и нажми «Сохранить проект».</div>';return;}
  projects.forEach(p=>{const row=document.createElement('div');row.className='file';const span=document.createElement('span');span.textContent=p.name;const btn=document.createElement('button');btn.className='btn';btn.textContent='OBJ';btn.onclick=()=>downloadText('leon_lab_'+p.shape+'.obj',p.obj,'text/plain');row.append(span,btn);list.append(row);});
 }
+function exportBackup(){const data={app:"LEON_LAB",format:1,createdAt:new Date().toISOString(),projects:getProjects(),idea:localStorage.getItem("leonlab_idea")||""};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="LEON_LAB_backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);document.getElementById("sceneStatus").textContent="Резервная копия создана. Сохрани файл в надёжном месте.";}
+function importBackup(e){const file=e.target.files&&e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(data.app!=="LEON_LAB"||!Array.isArray(data.projects))throw new Error("Неверный формат копии");if(!confirm("Импортировать копию? Текущий архив проектов и заметка будут заменены."))return;localStorage.setItem("leonlab_projects",JSON.stringify(data.projects.slice(0,30)));localStorage.setItem("leonlab_idea",String(data.idea||""));renderArchive();document.getElementById("ideaStatus").textContent="Заметка восстановлена из резервной копии.";document.getElementById("sceneStatus").textContent="Данные восстановлены.";alert("Резервная копия успешно восстановлена.");}catch(err){alert("Не удалось импортировать копию: "+err.message);}finally{e.target.value="";}};reader.readAsText(file);}
 function saveIdea(){localStorage.setItem('leonlab_idea',document.getElementById('ideaText').value);document.getElementById('ideaStatus').textContent='Заметка сохранена на этом устройстве.';}
 function loadIdea(){document.getElementById('ideaText').value=localStorage.getItem('leonlab_idea')||'';document.getElementById('ideaStatus').textContent=document.getElementById('ideaText').value?'Заметка загружена.':'Пока нет сохранённой заметки.';}
 
