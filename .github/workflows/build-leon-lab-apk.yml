@@ -69,12 +69,7 @@ jobs:
           test -n "$LEONLAB_KEY_PASSWORD"
           printf '%s' "$LEONLAB_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
           trap 'rm -f "$KEYSTORE_PATH"' EXIT
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \\
-            --ks "$KEYSTORE_PATH" \\
-            --ks-key-alias "$LEONLAB_KEY_ALIAS" \\
-            --ks-pass env:LEONLAB_KEYSTORE_PASSWORD \\
-            --key-pass env:LEONLAB_KEY_PASSWORD \\
-            "$APK_PATH"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$KEYSTORE_PATH" --ks-key-alias "$LEONLAB_KEY_ALIAS" --ks-pass env:LEONLAB_KEYSTORE_PASSWORD --key-pass env:LEONLAB_KEY_PASSWORD "$APK_PATH"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK_PATH"
 
       - name: Upload APK
