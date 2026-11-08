@@ -53,6 +53,30 @@ jobs:
           cd "$PROJECT_DIR"
           gradle --no-daemon assembleDebug
 
+      - name: Sign APK with persistent keystore
+        env:
+          LEONLAB_KEYSTORE_BASE64: ${{ secrets.LEONLAB_KEYSTORE_BASE64 }}
+          LEONLAB_KEYSTORE_PASSWORD: ${{ secrets.LEONLAB_KEYSTORE_PASSWORD }}
+          LEONLAB_KEY_ALIAS: ${{ secrets.LEONLAB_KEY_ALIAS }}
+          LEONLAB_KEY_PASSWORD: ${{ secrets.LEONLAB_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          APK_PATH="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
+          KEYSTORE_PATH="$RUNNER_TEMP/leonlab-upload.jks"
+          test -n "$LEONLAB_KEYSTORE_BASE64"
+          test -n "$LEONLAB_KEYSTORE_PASSWORD"
+          test -n "$LEONLAB_KEY_ALIAS"
+          test -n "$LEONLAB_KEY_PASSWORD"
+          printf '%s' "$LEONLAB_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          trap 'rm -f "$KEYSTORE_PATH"' EXIT
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \\
+            --ks "$KEYSTORE_PATH" \\
+            --ks-key-alias "$LEONLAB_KEY_ALIAS" \\
+            --ks-pass env:LEONLAB_KEYSTORE_PASSWORD \\
+            --key-pass env:LEONLAB_KEY_PASSWORD \\
+            "$APK_PATH"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK_PATH"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
