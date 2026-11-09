@@ -27,7 +27,7 @@ jobs:
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Apply LEON_LAB 0.3.1 HTML source
-        run: cp source/index-v0.3.1.html "$PROJECT_DIR/app/src/main/assets/index.html"
+        run: cp source/index-v0.3.2.html "$PROJECT_DIR/app/src/main/assets/index.html"
 
       - name: Set up Java
         uses: actions/setup-java@v4
