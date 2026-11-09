@@ -11,11 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Extract project ZIP
         run: |
           unzip -q LEON_LAB_Folder.zip -d extracted
@@ -25,34 +23,27 @@ jobs:
             exit 1
           fi
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-      - name: Apply LEON_LAB 0.3.1 HTML source
-        run: cp source/index-v0.3.2.html "$PROJECT_DIR/app/src/main/assets/index.html"
-
+      - name: Apply LEON_LAB 0.5.3 Android HTML source
+        run: cp source/index-v0.5.3-android.html "$PROJECT_DIR/app/src/main/assets/index.html"
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-                packages: 'platform-tools'
-
+          packages: 'platform-tools'
       - name: Install SDK packages
         run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-
       - name: Build APK
         run: |
           cd "$PROJECT_DIR"
           gradle --no-daemon assembleDebug
-
       - name: Sign APK with persistent keystore
         env:
           LEONLAB_KEYSTORE_BASE64: ${{ secrets.LEONLAB_KEYSTORE_BASE64 }}
@@ -71,7 +62,6 @@ jobs:
           trap 'rm -f "$KEYSTORE_PATH"' EXIT
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$KEYSTORE_PATH" --ks-key-alias "$LEONLAB_KEY_ALIAS" --ks-pass env:LEONLAB_KEYSTORE_PASSWORD --key-pass env:LEONLAB_KEY_PASSWORD "$APK_PATH"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK_PATH"
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
