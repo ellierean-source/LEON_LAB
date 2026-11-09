@@ -25,6 +25,24 @@ jobs:
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
       - name: Apply LEON_LAB 0.5.3 Android HTML source
         run: cp source/index-v0.5.3-android.html "$PROJECT_DIR/app/src/main/assets/index.html"
+      - name: Patch WebView for module loading
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('extracted')
+          candidates = list(root.rglob('MainActivity.kt'))
+          if not candidates:
+              raise SystemExit('MainActivity.kt not found in extracted project')
+          p = candidates[0]
+          s = p.read_text()
+          anchor = 'webView.settings.allowContentAccess = true'
+          addition = anchor + '\n        webView.settings.allowFileAccessFromFileURLs = true\n        webView.settings.allowUniversalAccessFromFileURLs = true'
+          if 'allowUniversalAccessFromFileURLs' not in s:
+              if anchor not in s:
+                  raise SystemExit('WebView settings anchor missing')
+              p.write_text(s.replace(anchor, addition, 1))
+          print('WebView file-origin access configured')
+          PY
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
